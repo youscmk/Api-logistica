@@ -1,0 +1,94 @@
+
+Introducción
+En el contexto actual de la gestión logística, las organizaciones requieren soluciones tecnológicas que permitan optimizar el seguimiento de sus envíos y mejorar la trazabilidad de la información asociada a estos procesos. En muchos casos, la gestión del estado de los despachos se realiza de forma manual, lo que implica una alta dependencia de correos electrónicos, registros informales y consultas repetitivas, generando ineficiencias operativas y riesgos de error.
+El presente informe tiene como propósito desarrollar la planificación de una API de seguimiento de envíos, utilizando MongoDB como motor de persistencia de datos, en el marco de la asignatura Bases de Datos No Estructuradas. Esta solución busca centralizar la gestión de estados de envío a través de un sistema interno, permitiendo registrar números de guía, actualizar su estado y mantener un historial de eventos, sin intervenir en la creación de pedidos.
+Desde una perspectiva de negocio, la propuesta se orienta a resolver la falta de control y trazabilidad en el seguimiento de envíos, facilitando al coordinador el acceso a información estructurada y actualizada. Esto permite mejorar la eficiencia operativa y reducir la dependencia de procesos manuales.
+En el ámbito técnico, el informe aborda la definición del modelo de datos en MongoDB, el diseño de la arquitectura de la API, la selección del stack tecnológico y la planificación de la infraestructura, considerando tanto un enfoque de Producto Mínimo Viable (MVP) como su evolución a un sistema escalable. Asimismo, se incorporan decisiones fundamentadas en patrones de diseño documental, estrategias de consulta y criterios de observabilidad.
+Finalmente, este documento se enfoca en la etapa de planificación, priorizando la coherencia entre las necesidades del negocio y las decisiones técnicas, con el objetivo de establecer una base sólida para el desarrollo futuro de la solución.
+3
+Contenidos obligatorios del desarrollo
+Apartado de negocio (visión Product Owner)
+Problemática
+Actualmente, cuando se envían productos, bodega genera el despacho y manda el número de guía por correo al coordinador. El problema es que no existe un sistema interno para hacer seguimiento, por lo que todo se maneja de forma manual.
+El coordinador tiene que ir revisando y anotando estados por su cuenta, lo que hace el proceso lento, poco claro y propenso a errores. Además, no hay un historial ordenado ni una forma fácil de saber en qué estado está cada envío.
+Esto afecta directamente la organización y el control de los despachos, ya que se pierde tiempo y no hay una visión clara de la información.
+Por eso, existe la oportunidad de crear una solución que centralice el seguimiento de los envíos y facilite el trabajo diario.
+Solución propuesta
+La solución es crear una API interna que permita hacer seguimiento de los envíos usando el número de guía.
+Esta API va a permitir registrar una guía, consultar en qué estado está, actualizar su estado y guardar un historial de cambios para cada envío.
+Está pensada principalmente para el coordinador, que es quien necesita ver y controlar los despachos, aunque también puede ser útil para el área logística en general.
+Con esto, se deja de trabajar de forma manual y desordenada, ya que toda la información queda centralizada en un solo sistema. Así se mejora el control, se reduce el tiempo de seguimiento y se tiene una trazabilidad clara de cada envío.
+4
+Alcance
+El alcance considera el desarrollo de una API de seguimiento que permita registrar guías, consultar estados, actualizarlos y guardar historial en MongoDB; no incluye la creación de pedidos, integración con sistemas externos ni automatización de correos; se asume que bodega envía correctamente las guías y que el coordinador las ingresa manualmente; como restricción, el sistema es simple y sin automatizaciones; y los principales involucrados son el coordinador, el área de bodega y el área logística.
+Metodología MoSCoW
+A continuación, se presenta la priorización de requerimientos utilizando la metodología MoSCoW, la cual permite clasificar las funcionalidades según su nivel de importancia para el sistema. Esto ayuda a definir claramente qué es esencial para el MVP y qué puede ser considerado en etapas posteriores del desarrollo.
+5
+Apartado técnico
+Stack tecnológico (MVP vs Producto Final)
+Para el desarrollo de la solución se plantea un stack tecnológico diferenciado entre un MVP y un producto final. En el MVP se utiliza Node.js con Express por su rapidez de implementación y facilidad para construir APIs, junto con Mongoose para trabajar con MongoDB de forma simple, lo que permite enfocarse en la funcionalidad sin agregar complejidad. Este enfoque tiene buen rendimiento para un volumen bajo, no requiere infraestructura costosa y cuenta con una gran comunidad, lo que facilita el desarrollo.
+En cambio, para un producto final se propone el uso de TypeScript con NestJS, ya que entrega una arquitectura más ordenada y escalable, permitiendo manejar mejor el crecimiento del sistema. En este caso se puede usar el driver nativo de MongoDB o una configuración más optimizada para mejorar el rendimiento de las consultas. Además, se incorporan herramientas de observabilidad como logs estructurados y monitoreo, lo que permite tener mayor control del sistema en producción. Aunque implica mayores costos por uso de infraestructura en la nube, este stack es más maduro y adecuado para un entorno real donde se requiere estabilidad, mantenibilidad y escalabilidad.
+6
+Infraestructura de hosting
+Para la infraestructura se considera un enfoque distinto entre MVP y producto final. En el MVP, la aplicación puede ejecutarse de forma local y la base de datos en MongoDB Atlas en su versión gratuita, lo que permite trabajar sin costos y sin preocuparse por disponibilidad o SLA, ya que el objetivo es solo validar la solución.
+En un producto final, la aplicación se desplegaría en la nube (por ejemplo, en servicios como servidores o contenedores), mientras que MongoDB se utilizaría en Atlas con un clúster administrado. Esto permite contar con alta disponibilidad (SLA), mejor ubicación geográfica cercana a los usuarios y escalabilidad automática según la carga. Aunque implica costos, estos son controlados y se justifican por la estabilidad, rendimiento y capacidad de crecimiento del sistema.
+7
+Modelo de datos MongoDB
+representa una guía con su estado actual y un historial de eventos. Se utiliza un esquema simple donde el campo estadoActual permite consultas rápidas y el arreglo eventos guarda todos los cambios de estado como historial.
+Se aplica el Attribute Pattern para mantener el estado actual accesible sin recorrer el historial, y el Bucket Pattern al agrupar los eventos dentro del mismo documento, lo que permite obtener toda la información en una sola consulta. No se utiliza Extended Reference, ya que no hay relaciones con otras colecciones
+Se opta por un modelo embebido en lugar de referenciado, ya que mejora el rendimiento, simplifica las consultas y es suficiente para el volumen esperado de datos. Además, se definen índices sobre trackingNumber (único) para búsquedas rápidas y sobre estadoActual para permitir filtros por estado.
+Desde el punto de vista técnico, este modelo es eficiente, simple y fácil de mantener. A nivel de negocio, permite tener trazabilidad completa de cada envío, acceso rápido a la información y una solución que puede escalar sin necesidad de rediseñar la base de datos.
+8
+Consultas necesarias
+Las consultas del sistema se basan en operaciones simples sobre la colección trackings, alineadas a los endpoints de la API. Estas permiten registrar, consultar, actualizar y listar envíos, utilizando índices para mejorar el rendimiento y mantener consultas eficientes.
+9
+Arquitectura de la API
+La arquitectura de la API sigue un modelo cliente-servidor, donde el cliente envía solicitudes a la API y esta se encarga de procesarlas y comunicarse con MongoDB. Es una arquitectura simple enfocada en el seguimiento de envíos, permitiendo registrar guías, consultar estados, actualizarlos y listar información de forma centralizada.
+Se considera el uso de Swagger para documentar la API, logs para monitoreo básico y pruebas con Jest, buscando una cobertura mínima del 80%, donde en un entorno CI/CD se puede bloquear el despliegue si no se cumple este requisito.
+10
+Conclusión
+En este informe se definió una solución basada en una API de seguimiento de envíos, enfocada en centralizar la información y dejar de depender de procesos manuales. Se tomaron decisiones como usar MongoDB con un modelo simple y embebido, un stack tecnológico que permite partir con un MVP rápido y evolucionar a algo más escalable, y una arquitectura sencilla que cumple con el objetivo del sistema sin agregar complejidad innecesaria.
+Como limitaciones, el sistema no contempla la creación de pedidos ni integraciones externas, además de depender del ingreso manual de las guías y actualizaciones de estado, lo que puede afectar la automatización del proceso.
+A futuro, se podría mejorar incorporando automatización, integración con sistemas externos, notificaciones y una interfaz más completa, lo que permitiría transformar esta solución en una herramienta más robusta y cercana a un entorno real.
+10
+11
+
+[TABLA]
+Categoría | Requisito | Justificación
+Must | API de seguimiento funcional | Es la base del sistema, sin esto no existe la solución
+Must | Registro de número de guía | Permite ingresar los envíos al sistema
+Must | Consulta de estado | Permite saber en qué estado está el envío
+Must | Actualización de estado | Permite hacer seguimiento del envío
+Must | Historial de eventos | Permite mantener trazabilidad
+Should | Validación de datos | Reduce errores en el ingreso de información
+Should | Evitar duplicados | Mejora la consistencia de los datos
+Could | Dashboard básico | Facilita la visualización de la información
+Could | Notificaciones | Mejora el seguimiento, pero no es esencial
+Won’t | Creación de pedidos | Está fuera del alcance del sistema
+Won’t | Integración con sistemas externos | Aumenta la complejidad innecesariamente
+Won’t | Automatización de correos | No es prioridad para el MVP
+
+[TABLA]
+Aspecto | MVP | Producto Final
+Lenguaje / Framework | Node.js + Express | TypeScript + NestJS
+Rendimiento | Suficiente para bajo volumen | Escalable y optimizable
+MongoDB | Mongoose (simple) | Driver nativo / optimizado
+Ecosistema | Librerías básicas | Integraciones avanzadas
+Observabilidad | Logs simples | Monitoreo y métricas
+Costos | Sin costo (local) | Infraestructura en la nube
+Comunidad | Amplia | Profesional
+Madurez | Prototipo | Producción
+
+[TABLA]
+Endpoint | Operación | Filtro | Índice | Ejemplo
+POST /trackings | insertOne | - | trackingNumber (unique) | insertOne({ trackingNumber })
+GET /trackings/:id | findOne | trackingNumber | trackingNumber | findOne({ trackingNumber })
+PUT /trackings/:id | updateOne | trackingNumber | trackingNumber | $set + $push
+GET /trackings | find | estadoActual | estadoActual | find({ estadoActual })
+
+[TABLA]
+Método | Endpoint | Descripción
+POST | /trackings | Registrar guía
+GET | /trackings/:trackingNumber | Consultar estado
+PUT | /trackings/:trackingNumber | Actualizar estado
+GET | /trackings | Listar envíos
