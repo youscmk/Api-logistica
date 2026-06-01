@@ -125,7 +125,7 @@ Api-logistica/
 
 **Archivo `.env`** (no versionado, copiar desde `.env.example`):
 ```
-DATABASE_URL=mongodb+srv://dylanaleexisb740_db_user:L2EZjdBJy1vVZkud@cluster0.qtbfqb0.mongodb.net/?appName=Cluster0
+DATABASE_URL=mongodb+srv://YOUR_USER:YOUR_PASSWORD@cluster0.mongodb.net/?appName=Cluster0
 COLLECION=colecciontest0
 PORT=3000
 NODE_ENV=development
