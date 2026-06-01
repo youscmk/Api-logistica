@@ -24,6 +24,72 @@ const swaggerDefinition = {
             description: 'Producción (Render)',
         },
     ],
+    components: {
+        securitySchemes: {
+            bearerAuth: {
+                type: 'http',
+                scheme: 'bearer',
+                bearerFormat: 'JWT',
+                description: 'Autenticación usando JWT. Usar: `Bearer <token>`',
+            },
+        },
+    },
+    security: [
+        {
+            bearerAuth: [],
+        },
+    ],
+    paths: {
+        '/api/v1/auth/login': {
+            post: {
+                tags: ['Auth'],
+                summary: 'Obtener JWT',
+                requestBody: {
+                    required: true,
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: {
+                                    username: { type: 'string' },
+                                    password: { type: 'string' },
+                                },
+                                required: ['username', 'password'],
+                            },
+                            examples: {
+                                credentials: {
+                                    summary: 'Credenciales de ejemplo',
+                                    value: { username: 'profesor', password: 'secret' },
+                                },
+                            },
+                        },
+                    },
+                },
+                responses: {
+                    '200': {
+                        description: 'Token JWT devuelto',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    type: 'object',
+                                    properties: {
+                                        token: { type: 'string' },
+                                    },
+                                },
+                                examples: {
+                                    success: {
+                                        summary: 'Respuesta ejemplo',
+                                        value: { token: 'eyJhbGciOiJI...ejemplo' },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    '401': { description: 'Credenciales inválidas' },
+                },
+            },
+        },
+    },
 };
 
 const swaggerOptions = {
