@@ -19,6 +19,10 @@ const swaggerDefinition = {
             url: 'http://localhost:8080',
             description: 'Servidor local',
         },
+        {
+            url: 'https://api-logistica-h3bd.onrender.com',
+            description: 'Producción (Render)',
+        },
     ],
 };
 
@@ -34,7 +38,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Swagger UI (lowercase and uppercase paths)
 app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/Swagger', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Health check
 app.get('/health', (req, res) => {
