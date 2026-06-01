@@ -4,6 +4,7 @@ const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const errorHandler = require('./middleware/errorHandler');
 const trackingRoutes = require('./routes/trackings');
+const authRoutes = require('./routes/auth');
 
 const app = express();
 
@@ -114,6 +115,7 @@ app.get('/health', (req, res) => {
 });
 
 // Rutas
+app.use('/api/v1/auth', authRoutes);
 app.use('/api', trackingRoutes);
 
 // Ruta no encontrada
