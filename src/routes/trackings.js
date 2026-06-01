@@ -6,6 +6,7 @@ const {
     updateTracking,
     listTrackings,
 } = require('../controllers/trackingController');
+const authenticate = require('../middleware/auth');
 
 /**
  * @swagger
@@ -66,7 +67,7 @@ const {
  *       409:
  *         description: Tracking ya existe (duplicado)
  */
-router.post('/trackings', createTracking);
+router.post('/trackings', authenticate, createTracking);
 
 /**
  * @swagger
@@ -166,7 +167,7 @@ router.get('/trackings/:trackingNumber', getTrackingById);
  *       404:
  *         description: Tracking no encontrado
  */
-router.put('/trackings/:trackingNumber', updateTracking);
+router.put('/trackings/:trackingNumber', authenticate, updateTracking);
 
 /**
  * @swagger
