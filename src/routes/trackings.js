@@ -114,7 +114,7 @@ router.post('/trackings', authenticate, createTracking);
  *       404:
  *         description: Tracking no encontrado
  */
-router.get('/trackings/:trackingNumber', getTrackingById);
+router.get('/trackings/:trackingNumber', authenticate, getTrackingById);
 
 /**
  * @swagger
@@ -203,6 +203,6 @@ router.put('/trackings/:trackingNumber', authenticate, updateTracking);
  *                   items:
  *                     type: object
  */
-router.get('/trackings', listTrackings);
+router.get('/trackings', authenticate, listTrackings);
 
 module.exports = router;

@@ -5,6 +5,7 @@ const app = require('../app');
 const Tracking = require('../models/Tracking');
 
 let mongoServer;
+let token;
 
 beforeAll(async () => {
     // Iniciar MongoDB en memoria
@@ -13,6 +14,11 @@ beforeAll(async () => {
     await mongoose.connect(mongoUri, {
         dbName: 'api_logistica_test',
     });
+    // Obtener token de autenticación
+    const res = await request(app)
+        .post('/api/v1/auth/login')
+        .send({ username: 'profesor', password: 'secret' });
+    token = res.body.token;
 });
 
 afterAll(async () => {
@@ -30,6 +36,7 @@ describe('API Endpoints - Integration Tests', () => {
         test('Debe crear un tracking exitosamente', async () => {
             const response = await request(app)
                 .post('/api/trackings')
+                .set('Authorization', `Bearer ${token}`)
                 .send({
                     trackingNumber: 'TRACK001',
                     estadoInicial: 'Ingresado',
@@ -46,6 +53,7 @@ describe('API Endpoints - Integration Tests', () => {
         test('No debe crear tracking sin trackingNumber', async () => {
             const response = await request(app)
                 .post('/api/trackings')
+                .set('Authorization', `Bearer ${token}`)
                 .send({
                     estadoInicial: 'Ingresado',
                 });
@@ -57,6 +65,7 @@ describe('API Endpoints - Integration Tests', () => {
         test('No debe crear tracking sin estadoInicial', async () => {
             const response = await request(app)
                 .post('/api/trackings')
+                .set('Authorization', `Bearer ${token}`)
                 .send({
                     trackingNumber: 'TRACK002',
                 });
@@ -69,6 +78,7 @@ describe('API Endpoints - Integration Tests', () => {
             // Crear primer tracking
             await request(app)
                 .post('/api/trackings')
+                .set('Authorization', `Bearer ${token}`)
                 .send({
                     trackingNumber: 'DUPLICATE',
                     estadoInicial: 'Ingresado',
@@ -77,6 +87,7 @@ describe('API Endpoints - Integration Tests', () => {
             // Intentar crear duplicado
             const response = await request(app)
                 .post('/api/trackings')
+                .set('Authorization', `Bearer ${token}`)
                 .send({
                     trackingNumber: 'DUPLICATE',
                     estadoInicial: 'En tránsito',
@@ -92,13 +103,16 @@ describe('API Endpoints - Integration Tests', () => {
             // Crear tracking
             await request(app)
                 .post('/api/trackings')
+                .set('Authorization', `Bearer ${token}`)
                 .send({
                     trackingNumber: 'GET001',
                     estadoInicial: 'Ingresado',
                 });
 
             // Obtener tracking
-            const response = await request(app).get('/api/trackings/GET001');
+            const response = await request(app)
+                .get('/api/trackings/GET001')
+                .set('Authorization', `Bearer ${token}`);
 
             expect(response.status).toBe(200);
             expect(response.body.success).toBe(true);
@@ -107,7 +121,9 @@ describe('API Endpoints - Integration Tests', () => {
         });
 
         test('Debe retornar 404 si tracking no existe', async () => {
-            const response = await request(app).get('/api/trackings/NOEXISTE');
+            const response = await request(app)
+                .get('/api/trackings/NOEXISTE')
+                .set('Authorization', `Bearer ${token}`);
 
             expect(response.status).toBe(404);
             expect(response.body.success).toBe(false);
@@ -119,6 +135,7 @@ describe('API Endpoints - Integration Tests', () => {
             // Crear tracking
             await request(app)
                 .post('/api/trackings')
+                .set('Authorization', `Bearer ${token}`)
                 .send({
                     trackingNumber: 'UPDATE001',
                     estadoInicial: 'Ingresado',
@@ -127,6 +144,7 @@ describe('API Endpoints - Integration Tests', () => {
             // Actualizar estado
             const response = await request(app)
                 .put('/api/trackings/UPDATE001')
+                .set('Authorization', `Bearer ${token}`)
                 .send({
                     nuevoEstado: 'En tránsito',
                     nota: 'Enviado desde bodega',
@@ -143,6 +161,7 @@ describe('API Endpoints - Integration Tests', () => {
             // Crear tracking
             await request(app)
                 .post('/api/trackings')
+                .set('Authorization', `Bearer ${token}`)
                 .send({
                     trackingNumber: 'UPDATE002',
                     estadoInicial: 'Ingresado',
@@ -151,6 +170,7 @@ describe('API Endpoints - Integration Tests', () => {
             // Intentar actualizar sin nuevoEstado
             const response = await request(app)
                 .put('/api/trackings/UPDATE002')
+                .set('Authorization', `Bearer ${token}`)
                 .send({});
 
             expect(response.status).toBe(400);
@@ -160,6 +180,7 @@ describe('API Endpoints - Integration Tests', () => {
         test('Debe retornar 404 si tracking no existe', async () => {
             const response = await request(app)
                 .put('/api/trackings/NOEXISTE')
+                .set('Authorization', `Bearer ${token}`)
                 .send({
                     nuevoEstado: 'En tránsito',
                 });
@@ -174,6 +195,7 @@ describe('API Endpoints - Integration Tests', () => {
             // Crear algunos trackings
             await request(app)
                 .post('/api/trackings')
+                .set('Authorization', `Bearer ${token}`)
                 .send({
                     trackingNumber: 'LIST001',
                     estadoInicial: 'Ingresado',
@@ -181,12 +203,15 @@ describe('API Endpoints - Integration Tests', () => {
 
             await request(app)
                 .post('/api/trackings')
+                .set('Authorization', `Bearer ${token}`)
                 .send({
                     trackingNumber: 'LIST002',
                     estadoInicial: 'En tránsito',
                 });
 
-            const response = await request(app).get('/api/trackings');
+            const response = await request(app)
+                .get('/api/trackings')
+                .set('Authorization', `Bearer ${token}`);
 
             expect(response.status).toBe(200);
             expect(response.body.success).toBe(true);
@@ -198,6 +223,7 @@ describe('API Endpoints - Integration Tests', () => {
             // Crear trackings con diferente estado
             await request(app)
                 .post('/api/trackings')
+                .set('Authorization', `Bearer ${token}`)
                 .send({
                     trackingNumber: 'FILTER001',
                     estadoInicial: 'Ingresado',
@@ -205,13 +231,16 @@ describe('API Endpoints - Integration Tests', () => {
 
             await request(app)
                 .post('/api/trackings')
+                .set('Authorization', `Bearer ${token}`)
                 .send({
                     trackingNumber: 'FILTER002',
                     estadoInicial: 'En tránsito',
                 });
 
             // Filtrar por estado
-            const response = await request(app).get('/api/trackings?estado=Ingresado');
+            const response = await request(app)
+                .get('/api/trackings?estado=Ingresado')
+                .set('Authorization', `Bearer ${token}`);
 
             expect(response.status).toBe(200);
             expect(response.body.success).toBe(true);
@@ -220,7 +249,9 @@ describe('API Endpoints - Integration Tests', () => {
         });
 
         test('Debe retornar array vacío si no hay trackings', async () => {
-            const response = await request(app).get('/api/trackings');
+            const response = await request(app)
+                .get('/api/trackings')
+                .set('Authorization', `Bearer ${token}`);
 
             expect(response.status).toBe(200);
             expect(response.body.success).toBe(true);
