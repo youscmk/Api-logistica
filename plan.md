@@ -365,4 +365,4 @@ Recomendado para fase posterior (no MVP):
 - [ ] Tests unitarios e integración con cobertura >= 80%
 - [ ] README.md con pasos de arranque
 - [ ] Conexión a BD funcional y datos guardándose en `COLLECION`
-- [ ] API responde correctamente en localhost:3000
+- [ ] API responde correctamente en localhost:8080

@@ -2,7 +2,7 @@ require('dotenv').config();
 const app = require('./app');
 const { connectDB } = require('./config/database');
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
 const startServer = async () => {
     try {
@@ -13,9 +13,9 @@ const startServer = async () => {
         app.listen(PORT, () => {
             console.log(`\n╔════════════════════════════════════════╗`);
             console.log(`║  API Seguimiento de Envíos - MVP       ║`);
-            console.log(`║  Servidor corriendo en puerto ${PORT}         ║`);
-            console.log(`║  http://localhost:${PORT}                  ║`);
-            console.log(`║  http://localhost:${PORT}/health           ║`);
+            console.log(`║  Servidor corriendo en puerto ${PORT}       ║`);
+            console.log(`║  http://localhost:${PORT}                ║`);
+            console.log(`║  http://localhost:${PORT}/health         ║`);
             console.log(`╚════════════════════════════════════════╝\n`);
         });
     } catch (error) {

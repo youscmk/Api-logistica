@@ -74,9 +74,9 @@ Salida esperada:
 
 ╔════════════════════════════════════════╗
 ║  API Seguimiento de Envíos - MVP       ║
-║  Servidor corriendo en puerto 3000      ║
-║  http://localhost:3000                  ║
-║  http://localhost:3000/health           ║
+║  Servidor corriendo en puerto 8080      ║
+║  http://localhost:8080                  ║
+║  http://localhost:8080/health           ║
 ╚════════════════════════════════════════╝
 ```
 
@@ -106,7 +106,7 @@ npm run test:coverage
 **Crear un nuevo tracking**
 
 ```bash
-curl -X POST http://localhost:3000/api/trackings \
+curl -X POST http://localhost:8080/api/trackings \
   -H "Content-Type: application/json" \
   -d '{
     "trackingNumber": "GUIDE001",
@@ -147,7 +147,7 @@ curl -X POST http://localhost:3000/api/trackings \
 **Consultar estado de un envío**
 
 ```bash
-curl http://localhost:3000/api/trackings/GUIDE001
+curl http://localhost:8080/api/trackings/GUIDE001
 ```
 
 **Respuesta (200 OK)**:
@@ -176,7 +176,7 @@ curl http://localhost:3000/api/trackings/GUIDE001
 **Cambiar estado de un envío**
 
 ```bash
-curl -X PUT http://localhost:3000/api/trackings/GUIDE001 \
+curl -X PUT http://localhost:8080/api/trackings/GUIDE001 \
   -H "Content-Type: application/json" \
   -d '{
     "nuevoEstado": "En tránsito",
@@ -212,13 +212,13 @@ curl -X PUT http://localhost:3000/api/trackings/GUIDE001 \
 **Listar todos**
 
 ```bash
-curl http://localhost:3000/api/trackings
+curl http://localhost:8080/api/trackings
 ```
 
 **Listar con filtro por estado**
 
 ```bash
-curl "http://localhost:3000/api/trackings?estado=En%20tránsito"
+curl "http://localhost:8080/api/trackings?estado=En%20tránsito"
 ```
 
 **Respuesta (200 OK)**:
@@ -360,7 +360,7 @@ Objetivo: **>= 80%** de cobertura
 Verificar que el servidor está activo:
 
 ```bash
-curl http://localhost:3000/health
+curl http://localhost:8080/health
 ```
 
 Respuesta:
