@@ -1,5 +1,11 @@
 const Tracking = require('../models/Tracking');
 
+const VALID_STATUSES = ['Ingresado', 'En tránsito', 'Entregado', 'No entregado'];
+
+const isValidEstado = (value) => {
+    return typeof value === 'string' && VALID_STATUSES.includes(value.trim());
+};
+
 // POST /trackings - Crear nuevo tracking
 const createTracking = async (req, res, next) => {
     try {
@@ -10,6 +16,14 @@ const createTracking = async (req, res, next) => {
             return res.status(400).json({
                 success: false,
                 error: 'trackingNumber y estadoInicial son requeridos',
+            });
+        }
+
+        const estado = estadoInicial.trim();
+        if (!isValidEstado(estado)) {
+            return res.status(400).json({
+                success: false,
+                error: `estadoInicial inválido. Valores válidos: ${VALID_STATUSES.join(', ')}`,
             });
         }
 
@@ -74,6 +88,14 @@ const updateTracking = async (req, res, next) => {
             });
         }
 
+        const estado = nuevoEstado.trim();
+        if (!isValidEstado(estado)) {
+            return res.status(400).json({
+                success: false,
+                error: `nuevoEstado inválido. Valores válidos: ${VALID_STATUSES.join(', ')}`,
+            });
+        }
+
         // Buscar y actualizar
         const tracking = await Tracking.findOneAndUpdate(
             { trackingNumber },
@@ -113,7 +135,8 @@ const listTrackings = async (req, res, next) => {
 
         let filter = {};
         if (estado) {
-            filter.estadoActual = estado;
+            const normalizedEstado = estado.trim();
+            filter.estadoActual = new RegExp(`^${normalizedEstado}$`, 'i');
         }
 
         const trackings = await Tracking.find(filter).sort({ createdAt: -1 });

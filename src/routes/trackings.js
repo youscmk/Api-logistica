@@ -31,6 +31,7 @@ const authenticate = require('../middleware/auth');
  *                 type: string
  *                 description: Estado inicial del envío
  *                 example: "Ingresado"
+ *                 enum: ["Ingresado", "En tránsito", "Entregado", "No entregado"]
  *               nota:
  *                 type: string
  *                 description: Nota descriptiva (opcional)
@@ -62,6 +63,18 @@ const authenticate = require('../middleware/auth');
  *                       type: array
  *                       items:
  *                         type: object
+ *             examples:
+ *               createdTracking:
+ *                 summary: Ejemplo de tracking creado
+ *                 value:
+ *                   success: true
+ *                   data:
+ *                     trackingNumber: "GUIDE001"
+ *                     estadoActual: "Ingresado"
+ *                     eventos:
+ *                       - estado: "Ingresado"
+ *                         timestamp: "2026-06-01T10:00:00Z"
+ *                         nota: "Registro inicial"
  *       400:
  *         description: Datos inválidos
  *       409:
@@ -111,6 +124,18 @@ router.post('/trackings', authenticate, createTracking);
  *                         - estado: "Ingresado"
  *                           timestamp: "2026-06-01T10:00:00Z"
  *                           nota: "Registro inicial"
+ *             examples:
+ *               trackingFound:
+ *                 summary: Ejemplo de tracking encontrado
+ *                 value:
+ *                   success: true
+ *                   data:
+ *                     trackingNumber: "GUIDE001"
+ *                     estadoActual: "En tránsito"
+ *                     eventos:
+ *                       - estado: "Ingresado"
+ *                         timestamp: "2026-06-01T10:00:00Z"
+ *                         nota: "Registro inicial"
  *       404:
  *         description: Tracking no encontrado
  */
@@ -143,6 +168,7 @@ router.get('/trackings/:trackingNumber', authenticate, getTrackingById);
  *                 type: string
  *                 description: Nuevo estado del envío
  *                 example: "En tránsito"
+ *                 enum: ["Ingresado", "En tránsito", "Entregado", "No entregado"]
  *               nota:
  *                 type: string
  *                 description: Nota descriptiva (opcional)
@@ -162,6 +188,21 @@ router.get('/trackings/:trackingNumber', authenticate, getTrackingById);
  *                   example: true
  *                 data:
  *                   type: object
+ *             examples:
+ *               trackingUpdated:
+ *                 summary: Ejemplo de actualización exitosa
+ *                 value:
+ *                   success: true
+ *                   data:
+ *                     trackingNumber: "GUIDE001"
+ *                     estadoActual: "Entregado"
+ *                     eventos:
+ *                       - estado: "Ingresado"
+ *                         timestamp: "2026-06-01T10:00:00Z"
+ *                         nota: "Registro inicial"
+ *                       - estado: "Entregado"
+ *                         timestamp: "2026-06-05T16:20:00Z"
+ *                         nota: "Entrega completada"
  *       400:
  *         description: Datos inválidos
  *       404:
@@ -202,6 +243,17 @@ router.put('/trackings/:trackingNumber', authenticate, updateTracking);
  *                   type: array
  *                   items:
  *                     type: object
+ *             examples:
+ *               listTrackings:
+ *                 summary: Ejemplo de listado de trackings
+ *                 value:
+ *                   success: true
+ *                   count: 2
+ *                   data:
+ *                     - trackingNumber: "GUIDE001"
+ *                       estadoActual: "En tránsito"
+ *                     - trackingNumber: "GUIDE002"
+ *                       estadoActual: "Entregado"
  */
 router.get('/trackings', authenticate, listTrackings);
 

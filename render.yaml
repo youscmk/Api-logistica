@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: api-logistica
+    env: node
+    region: oregon
+    plan: free
+    branch: main
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: "8080"

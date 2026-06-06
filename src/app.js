@@ -90,6 +90,34 @@ const swaggerDefinition = {
                 },
             },
         },
+        '/health': {
+            get: {
+                tags: ['Health'],
+                summary: 'Verificar estado del servidor',
+                responses: {
+                    '200': {
+                        description: 'Servidor activo',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    type: 'object',
+                                    properties: {
+                                        status: { type: 'string', example: 'OK' },
+                                        message: { type: 'string', example: 'Servidor activo' },
+                                    },
+                                },
+                                examples: {
+                                    health: {
+                                        summary: 'Ejemplo de estado saludable',
+                                        value: { status: 'OK', message: 'Servidor activo' },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
     },
 };
 

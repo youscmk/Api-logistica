@@ -105,6 +105,12 @@ npm run test:coverage
 
 **Crear un nuevo tracking**
 
+Estados válidos para `estadoInicial` y `nuevoEstado`:
+- `Ingresado`
+- `En tránsito`
+- `Entregado`
+- `No entregado`
+
 ```bash
 curl -X POST http://localhost:8080/api/trackings \
   -H "Content-Type: application/json" \
