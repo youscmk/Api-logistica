@@ -47,7 +47,7 @@ Editar `.env`:
 ```
 DATABASE_URL=mongodb+srv://YOUR_USER:YOUR_PASSWORD@cluster.mongodb.net/?appName=Cluster0
 COLLECION=colecciontest0
-PORT=3000
+PORT=8080
 NODE_ENV=development
 ```
 
