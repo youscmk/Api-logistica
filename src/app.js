@@ -17,12 +17,8 @@ const swaggerDefinition = {
     },
     servers: [
         {
-            url: 'http://localhost:8080',
-            description: 'Servidor local',
-        },
-        {
-            url: 'https://api-logistica-h3bd.onrender.com',
-            description: 'Producción (Render)',
+            url: '/',
+            description: 'Servidor actual',
         },
     ],
     components: {
