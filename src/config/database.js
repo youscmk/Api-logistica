@@ -6,20 +6,21 @@ dns.setServers(['8.8.8.8', '1.1.1.1']);
 const connectDB = async () => {
     try {
         const DATABASE_URL = process.env.DATABASE_URL;
-        const COLLECION = process.env.COLLECION;
+        const DB_NAME = process.env.DB_NAME || 'api_logistica';
+        const COLLECTION_NAME = process.env.COLLECION || 'trackings';
 
         if (!DATABASE_URL) {
             throw new Error('DATABASE_URL no está definida en .env');
         }
 
         await mongoose.connect(DATABASE_URL, {
-            dbName: 'api_logistica',
+            dbName: DB_NAME,
             serverSelectionTimeoutMS: 5000,
         });
 
         console.log(`✓ Conectado a MongoDB Atlas`);
-        console.log(`✓ Base de datos: api_logistica`);
-        console.log(`✓ Colección: ${COLLECION}`);
+        console.log(`✓ Base de datos: ${DB_NAME}`);
+        console.log(`✓ Colección: ${COLLECTION_NAME}`);
 
         return mongoose.connection;
     } catch (error) {
